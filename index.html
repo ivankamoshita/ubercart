@@ -81,6 +81,9 @@
                 <button onclick="switchTab('entries')" id="nav-entries" class="px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
                     <i data-lucide="list" class="w-4 h-4"></i> Registros
                 </button>
+                <button onclick="switchTab('tithe')" id="nav-tithe" class="px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i data-lucide="heart-handshake" class="w-4 h-4 text-amber-400"></i> Dízimo (10%)
+                </button>
                 <button onclick="switchTab('analytics')" id="nav-analytics" class="px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
                     <i data-lucide="line-chart" class="w-4 h-4"></i> Gráficos
                 </button>
@@ -133,7 +136,7 @@
                     </div>
                     <div id="kpi-net-profit" class="text-3xl font-extrabold text-white tracking-tight">¥0</div>
                     <p class="text-xs text-slate-400 mt-2 flex items-center gap-1.5">
-                        Margem: <span id="kpi-profit-margin" class="text-ubergreen font-bold">0%</span> do faturamento
+                        Dízimo (10%): <span id="kpi-net-tithe-preview" class="text-amber-400 font-bold">¥0</span>
                     </p>
                 </div>
 
@@ -302,17 +305,111 @@
                         <thead class="bg-slate-800/50 text-slate-400 uppercase tracking-wider text-[10px]">
                             <tr>
                                 <th class="p-3.5">Data</th>
-                                <th class="p-3.5">Horas Trab.</th>
+                                <th class="p-3.5">Horas</th>
                                 <th class="p-3.5">Entregas</th>
-                                <th class="p-3.5">Km Rodado</th>
-                                <th class="p-3.5">Ganhos Uber</th>
-                                <th class="p-3.5">Gorjetas</th>
-                                <th class="p-3.5">Gastos Est.</th>
-                                <th class="p-3.5">Lucro Líquido</th>
+                                <th class="p-3.5">KM</th>
+                                <th class="p-3.5">Uber (¥)</th>
+                                <th class="p-3.5">Gorjeta (¥)</th>
+                                <th class="p-3.5">Custo Veículo (¥)</th>
+                                <th class="p-3.5">Lucro Real (¥)</th>
                                 <th class="p-3.5 text-right">Ações</th>
                             </tr>
                         </thead>
                         <tbody id="all-entries-table" class="divide-y divide-slate-800">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABAS: DÍZIMO (10%) -->
+        <div id="tab-tithe" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-amber-500/10 p-5 rounded-2xl border border-amber-500/30">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-amber-500/20 text-amber-400 rounded-2xl border border-amber-500/30">
+                        <i data-lucide="heart-handshake" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            Gestão de Dízimo (10%)
+                        </h2>
+                        <p class="text-xs text-amber-200/80">Separe os 10% dos seus ganhos para abençoar sua igreja local</p>
+                    </div>
+                </div>
+                <div class="bg-slate-900/80 px-4 py-2 rounded-xl border border-slate-800 text-xs text-slate-300">
+                    Base atual de cálculo: <span class="font-bold text-ubergreen" id="tithe-base-mode-text">Lucro Líquido Real</span>
+                </div>
+            </div>
+
+            <!-- Resumo dos Valores do Dízimo -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                
+                <!-- Dízimo sobre o Lucro Líquido -->
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-amber-500/30 shadow-xl relative overflow-hidden">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Dízimo do Lucro Líquido (10%)</span>
+                        <div class="p-2 bg-amber-500/10 rounded-xl text-amber-400 border border-amber-500/20">
+                            <i data-lucide="coins" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div id="tithe-net-amount" class="text-3xl font-extrabold text-amber-400 tracking-tight">¥0</div>
+                    <p class="text-xs text-slate-400 mt-2">
+                        Calculado sobre o lucro real de <span id="tithe-net-base" class="text-white font-semibold">¥0</span>
+                    </p>
+                </div>
+
+                <!-- Dízimo sobre o Bruto -->
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 shadow-xl">
+                    <div class="flex items-center justify-between text-slate-400 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Dízimo do Bruto (10%)</span>
+                        <div class="p-2 bg-slate-800 rounded-xl text-slate-300">
+                            <i data-lucide="receipt" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div id="tithe-gross-amount" class="text-2xl font-bold text-white tracking-tight">¥0</div>
+                    <p class="text-xs text-slate-400 mt-2">
+                        Se preferir dar do faturamento bruto (<span id="tithe-gross-base" class="text-slate-300">¥0</span>)
+                    </p>
+                </div>
+
+                <!-- Status de Separação -->
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Lembrete de Dízimo</span>
+                        <div class="p-2 bg-emerald-500/10 rounded-xl text-emerald-400">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            "Trazei todos os dízimos à casa do tesouro..."
+                        </p>
+                        <p class="text-[10px] text-amber-400 font-semibold mt-1">— Malaquias 3:10</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Dízimo por Turno / Semana -->
+            <div class="bg-slate-900/80 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+                <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i data-lucide="calendar-heart" class="w-4 h-4 text-amber-400"></i> Detalhamento do Dízimo por Turno
+                    </h3>
+                    <span class="text-xs text-slate-400">Valores em Ienes (¥)</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-800/50 text-slate-400 uppercase tracking-wider text-[10px]">
+                            <tr>
+                                <th class="p-3.5">Data</th>
+                                <th class="p-3.5">Lucro do Dia</th>
+                                <th class="p-3.5">Ganhos Brutos</th>
+                                <th class="p-3.5 text-amber-400">Dízimo do Lucro (10%)</th>
+                                <th class="p-3.5">Dízimo do Bruto (10%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tithe-entries-table" class="divide-y divide-slate-800">
                             <!-- Inserido dinamicamente via JS -->
                         </tbody>
                     </table>
@@ -368,7 +465,7 @@
                     <form id="settings-form" onsubmit="saveSettings(event)" class="space-y-4">
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Meta Financeira Semanal (Lucro em ¥)</label>
-                            <input type="number" step="1 text-white" id="cfg-weekly-goal" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:ring-2 focus:ring-ubergreen outline-none" required>
+                            <input type="number" step="1" id="cfg-weekly-goal" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-white focus:ring-2 focus:ring-ubergreen outline-none" required>
                         </div>
 
                         <div>
@@ -453,13 +550,13 @@
             <button onclick="openEntryModal()" class="bg-ubergreen text-slate-950 p-3 rounded-full shadow-lg shadow-ubergreen/30 -mt-5 active:scale-95 transition-transform">
                 <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
             </button>
+            <button onclick="switchTab('tithe')" id="mob-nav-tithe" class="flex flex-col items-center gap-1 text-slate-400">
+                <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Dízimo</span>
+            </button>
             <button onclick="switchTab('analytics')" id="mob-nav-analytics" class="flex flex-col items-center gap-1 text-slate-400">
                 <i data-lucide="line-chart" class="w-5 h-5"></i>
                 <span class="text-[10px] font-medium">Gráficos</span>
-            </button>
-            <button onclick="switchTab('settings')" id="mob-nav-settings" class="flex flex-col items-center gap-1 text-slate-400">
-                <i data-lucide="settings" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium">Ajustes</span>
             </button>
         </div>
     </div>
@@ -600,9 +697,6 @@
         let chartWeekday = null;
         let chartEfficiency = null;
 
-        // Modo de entrada do horário: 'range' (19:30 - 23:45) ou 'direct' (4h 30m)
-        let timeInputMode = 'range';
-
         // Ao carregar a página
         window.onload = function() {
             lucide.createIcons();
@@ -620,46 +714,12 @@
             renderCharts();
         };
 
-        // Alternar entre modo Início/Fim e Horas/Minutos Direto
-        function toggleTimeInputMode() {
-            if (timeInputMode === 'range') {
-                timeInputMode = 'direct';
-                document.getElementById('time-mode-range').classList.add('hidden');
-                document.getElementById('time-mode-direct').classList.remove('hidden');
-                document.getElementById('time-mode-toggle').innerText = 'Modificar para: Horário de Início/Fim';
-            } else {
-                timeInputMode = 'range';
-                document.getElementById('time-mode-direct').classList.add('hidden');
-                document.getElementById('time-mode-range').classList.remove('hidden');
-                document.getElementById('time-mode-toggle').innerText = 'Modificar para: Horas e Minutos';
-            }
-        }
-
-        // Calcular total de horas pelo Horário de Início e Término
-        function calculateHoursFromRange() {
-            const startVal = document.getElementById('entry-start-time').value;
-            const endVal = document.getElementById('entry-end-time').value;
-
-            if (!startVal || !endVal) {
-                updateHoursDisplay(0);
-                return;
-            }
-
-            const [startH, startM] = startVal.split(':').map(Number);
-            const [endH, endM] = endVal.split(':').map(Number);
-
-            let startTotalMins = startH * 60 + startM;
-            let endTotalMins = endH * 60 + endM;
-
-            // Se o horário de término for menor que o de início, assume que virou a madrugada (ex: 22:00 às 02:00)
-            if (endTotalMins < startTotalMins) {
-                endTotalMins += 24 * 60;
-            }
-
-            const diffMins = endTotalMins - startTotalMins;
-            const decimalHours = diffMins / 60;
-
-            updateHoursDisplay(decimalHours, diffMins);
+        // Calcular custo por KM com base nos ajustes
+        function getVehicleCostPerKm() {
+            const fuelPrice = parseFloat(appSettings.fuelPrice) || 0;
+            const efficiency = parseFloat(appSettings.fuelEfficiency) || 1;
+            const maint = parseFloat(appSettings.maintenanceCostKm) || 0;
+            return (fuelPrice / efficiency) + maint;
         }
 
         // Calcular total de horas por Horas + Minutos
@@ -690,7 +750,7 @@
 
         // Trocar Abas de Navegação
         function switchTab(tabName) {
-            const tabs = ['dashboard', 'entries', 'analytics', 'settings'];
+            const tabs = ['dashboard', 'entries', 'tithe', 'analytics', 'settings'];
             
             tabs.forEach(t => {
                 const el = document.getElementById(`tab-${t}`);
@@ -725,19 +785,65 @@
                 activeMob.className = "flex flex-col items-center gap-1 text-ubergreen";
             }
 
-            if (tabName === 'analytics') {
+            if (tabName === 'tithe') {
+                updateTitheTab();
+            } else if (tabName === 'analytics') {
                 renderCharts();
             }
         }
 
-        // Calcular Custo por KM baseado nas configurações
-        function getVehicleCostPerKm() {
-            const fuelPrice = parseFloat(appSettings.fuelPrice) || 0;
-            const efficiency = parseFloat(appSettings.fuelEfficiency) || 1;
-            const maint = parseFloat(appSettings.maintenanceCostKm) || 0;
+        // Filtrar Entradas por Período
+        function filterEntriesByPeriod(list, period) {
+            if (period === 'all') return list;
 
-            const fuelPerKm = fuelPrice / efficiency;
-            return fuelPerKm + maint;
+            const now = new Date();
+            return list.filter(e => {
+                const entryDate = parseLocalDate(e.date);
+                if (!entryDate) return false;
+
+                if (period === '7days') {
+                    const diffTime = Math.abs(now - entryDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    return diffDays <= 7;
+                } else if (period === '30days') {
+                    const diffTime = Math.abs(now - entryDate);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    return diffDays <= 30;
+                } else if (period === 'month') {
+                    return entryDate.getMonth() === now.getMonth() && entryDate.getFullYear() === now.getFullYear();
+                }
+                return true;
+            });
+        }
+
+        // Atualizar Progresso da Meta Semanal
+        function updateGoalProgress() {
+            const goal = parseFloat(appSettings.weeklyGoal) || 50000;
+            const weekEntries = filterEntriesByPeriod(entries, '7days');
+
+            const costPerKm = getVehicleCostPerKm();
+            let weeklyProfit = 0;
+
+            weekEntries.forEach(e => {
+                const gross = (parseFloat(e.earnings) || 0) + (parseFloat(e.tips) || 0);
+                const cost = (parseFloat(e.km) || 0) * costPerKm;
+                weeklyProfit += (gross - cost);
+            });
+
+            const percent = Math.min(100, Math.max(0, (weeklyProfit / goal) * 100)).toFixed(0);
+            const remaining = goal - weeklyProfit;
+
+            document.getElementById('goal-progress-text').innerText = `${formatCurrency(weeklyProfit)} / ${formatCurrency(goal)}`;
+            document.getElementById('goal-progress-bar').style.width = `${percent}%`;
+            document.getElementById('goal-percentage-text').innerText = `${percent}%`;
+
+            if (remaining <= 0) {
+                document.getElementById('goal-remaining-text').innerText = '🎉 Parabéns! Meta semanal atingida!';
+                document.getElementById('goal-remaining-text').className = 'text-ubergreen font-bold';
+            } else {
+                document.getElementById('goal-remaining-text').innerText = `Faltam ${formatCurrency(remaining)} para atingir a meta`;
+                document.getElementById('goal-remaining-text').className = '';
+            }
         }
 
         // Atualizar Métricas no Dashboard
@@ -770,14 +876,16 @@
             });
 
             const netProfit = totalGross - totalExpenses;
-            const profitMargin = totalGross > 0 ? ((netProfit / totalGross) * 100).toFixed(1) : 0;
             const hourlyRate = totalHours > 0 ? (netProfit / totalHours) : 0;
             const perDelivery = totalDeliveries > 0 ? (totalGross / totalDeliveries) : 0;
             const perKm = totalKm > 0 ? (totalGross / totalKm) : 0;
 
+            // Preview do dízimo de 10%
+            const netTithe = Math.max(0, netProfit * 0.10);
+
             // Inserir valores nos cards
             document.getElementById('kpi-net-profit').innerText = formatCurrency(netProfit);
-            document.getElementById('kpi-profit-margin').innerText = `${profitMargin}%`;
+            document.getElementById('kpi-net-tithe-preview').innerText = formatCurrency(netTithe);
             document.getElementById('kpi-gross-earnings').innerText = formatCurrency(totalGross);
             document.getElementById('kpi-tips').innerText = formatCurrency(totalTips);
             document.getElementById('kpi-total-expenses').innerText = formatCurrency(totalExpenses);
@@ -795,57 +903,66 @@
 
             // Renderizar mini tabela do dashboard
             renderRecentTable();
+
+            // Atualizar aba dízimo
+            updateTitheTab();
         }
 
-        // Progresso da Meta Semanal
-        function updateGoalProgress() {
-            const weeklyGoal = parseFloat(appSettings.weeklyGoal) || 50000;
-            const last7Days = filterEntriesByPeriod(entries, '7days');
+        // Função para calcular e renderizar a Aba do Dízimo
+        function updateTitheTab() {
+            const period = document.getElementById('dashboard-period').value;
+            const filtered = filterEntriesByPeriod(entries, period);
 
             const costPerKm = getVehicleCostPerKm();
-            let weeklyNetProfit = 0;
+            let totalGross = 0;
+            let totalExpenses = 0;
 
-            last7Days.forEach(e => {
+            filtered.forEach(e => {
                 const gross = (parseFloat(e.earnings) || 0) + (parseFloat(e.tips) || 0);
                 const cost = (parseFloat(e.km) || 0) * costPerKm;
-                weeklyNetProfit += (gross - cost);
+                totalGross += gross;
+                totalExpenses += cost;
             });
 
-            const progress = Math.min(100, Math.max(0, (weeklyNetProfit / weeklyGoal) * 100));
-            const remaining = Math.max(0, weeklyGoal - weeklyNetProfit);
+            const totalNet = Math.max(0, totalGross - totalExpenses);
+            const titheNet = totalNet * 0.10;
+            const titheGross = totalGross * 0.10;
 
-            document.getElementById('goal-progress-bar').style.width = `${progress}%`;
-            document.getElementById('goal-progress-text').innerText = `${formatCurrency(weeklyNetProfit)} / ${formatCurrency(weeklyGoal)}`;
-            document.getElementById('goal-percentage-text').innerText = `${progress.toFixed(0)}%`;
+            document.getElementById('tithe-net-amount').innerText = formatCurrency(titheNet);
+            document.getElementById('tithe-net-base').innerText = formatCurrency(totalNet);
 
-            if (remaining === 0) {
-                document.getElementById('goal-remaining-text').innerText = '🎉 Parabéns! Meta semanal concluída!';
-            } else {
-                document.getElementById('goal-remaining-text').innerText = `Faltam ${formatCurrency(remaining)} para atingir sua meta`;
+            document.getElementById('tithe-gross-amount').innerText = formatCurrency(titheGross);
+            document.getElementById('tithe-gross-base').innerText = formatCurrency(totalGross);
+
+            // Renderizar Tabela do Dízimo
+            const tbody = document.getElementById('tithe-entries-table');
+            tbody.innerHTML = '';
+
+            const sorted = [...filtered].sort((a,b) => parseLocalDate(b.date) - parseLocalDate(a.date));
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-slate-500 text-xs">Nenhum registro encontrado para este período.</td></tr>`;
+                return;
             }
-        }
 
-        // Filtrar entradas por período de tempo
-        function filterEntriesByPeriod(list, period) {
-            if (period === 'all') return list;
+            sorted.forEach(e => {
+                const gross = (parseFloat(e.earnings) || 0) + (parseFloat(e.tips) || 0);
+                const cost = (parseFloat(e.km) || 0) * costPerKm;
+                const net = gross - cost;
 
-            const now = new Date();
-            return list.filter(e => {
-                const entryDate = parseLocalDate(e.date);
-                if (!entryDate) return false;
+                const dayTitheNet = Math.max(0, net * 0.10);
+                const dayTitheGross = gross * 0.10;
 
-                if (period === '7days') {
-                    const diffTime = now - entryDate;
-                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                    return diffDays >= 0 && diffDays <= 7;
-                } else if (period === '30days') {
-                    const diffTime = now - entryDate;
-                    const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                    return diffDays >= 0 && diffDays <= 30;
-                } else if (period === 'month') {
-                    return entryDate.getMonth() === now.getMonth() && entryDate.getFullYear() === now.getFullYear();
-                }
-                return true;
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-medium text-white">${formatDate(e.date)}</td>
+                    <td class="p-3.5 font-semibold text-ubergreen">${formatCurrency(net)}</td>
+                    <td class="p-3.5 text-slate-300">${formatCurrency(gross)}</td>
+                    <td class="p-3.5 font-extrabold text-amber-400 bg-amber-500/5">${formatCurrency(dayTitheNet)}</td>
+                    <td class="p-3.5 font-semibold text-slate-200">${formatCurrency(dayTitheGross)}</td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
